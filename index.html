@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Estratégia - Aviator</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: #fff; padding: 20px; }
+    h1 { color: #ffcc00; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #222; }
+    th, td { border: 1px solid #333; padding: 10px; text-align: center; }
+    th { background: #333; }
+    tr:nth-child(even) { background: #1c1c1c; }
+    input { padding: 10px; width: 100px; font-size: 16px; }
+    button { padding: 10px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>📈 Estratégia Aviator - Única (Corrigida)</h1>
+  <p><strong>Condição de entrada:</strong> R[n−4] &lt; 2, R[n−3] &lt; 2, R[n−2] &gt; 2, R[n−1] &gt; R[n−2]</p>
+  <p><strong>Saída fixa:</strong> 1.12</p>
+  <p><strong>Stake fixa:</strong> R$100</p>
+
+  <input type="text" id="entrada" placeholder="Ex: 1.23" />
+  <button onclick="registrar()">Registrar</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Rodada</th>
+        <th>Valor</th>
+        <th>Resultado</th>
+        <th>Lucro (R$)</th>
+        <th>Lucro Acumulado (R$)</th>
+      </tr>
+    </thead>
+    <tbody id="tabela-resultados"></tbody>
+  </table>
+
+  <script>
+    const valores = [];
+    const stake = 100;
+    const saidaFixa = 1.12;
+    let lucroAcumulado = 0;
+
+    function registrar() {
+      const input = document.getElementById("entrada");
+      const valor = parseFloat(input.value.replace(",", "."));
+      if (!isNaN(valor)) {
+        valores.push(valor);
+        atualizarTabela();
+        input.value = "";
+      }
+    }
+
+    function atualizarTabela() {
+      const tabela = document.getElementById("tabela-resultados");
+      tabela.innerHTML = "";
+      lucroAcumulado = 0;
+
+      for (let i = 4; i < valores.length; i++) {
+        let r4 = valores[i - 4];
+        let r3 = valores[i - 3];
+        let r2 = valores[i - 2];
+        let r1 = valores[i - 1];
+        let atual = valores[i];
+
+        if (r4 < 2 && r3 < 2 && r2 > 2 && r1 > r2) {
+          const resultado = atual >= saidaFixa ? "✅" : "❌";
+          const lucro = resultado === "✅" ? stake * (saidaFixa - 1) : -stake;
+          lucroAcumulado += lucro;
+
+          const linha = `<tr>
+            <td>${i + 1}</td>
+            <td>${atual.toFixed(2)}</td>
+            <td>${resultado}</td>
+            <td>R$ ${lucro.toFixed(2)}</td>
+            <td>R$ ${lucroAcumulado.toFixed(2)}</td>
+          </tr>`;
+          tabela.innerHTML += linha;
+        }
+      }
+    }
+  </script>
+</body>
+</html>
