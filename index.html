@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -29,6 +28,7 @@
       <tr>
         <th>Rodada</th>
         <th>Valor</th>
+        <th>Entrada</th>
         <th>Resultado</th>
         <th>Lucro (R$)</th>
         <th>Lucro Acumulado (R$)</th>
@@ -59,26 +59,32 @@
       lucroAcumulado = 0;
 
       for (let i = 4; i < valores.length; i++) {
+        let atual = valores[i];
+        let entrada = "-";
+        let resultado = "-";
+        let lucro = 0;
+
         let r4 = valores[i - 4];
         let r3 = valores[i - 3];
         let r2 = valores[i - 2];
         let r1 = valores[i - 1];
-        let atual = valores[i];
 
         if (r4 < 2 && r3 < 2 && r2 > 2 && r1 > r2) {
-          const resultado = atual >= saidaFixa ? "✅" : "❌";
-          const lucro = resultado === "✅" ? stake * (saidaFixa - 1) : -stake;
+          entrada = "✅";
+          resultado = atual >= saidaFixa ? "✅" : "❌";
+          lucro = resultado === "✅" ? stake * (saidaFixa - 1) : -stake;
           lucroAcumulado += lucro;
-
-          const linha = `<tr>
-            <td>${i + 1}</td>
-            <td>${atual.toFixed(2)}</td>
-            <td>${resultado}</td>
-            <td>R$ ${lucro.toFixed(2)}</td>
-            <td>R$ ${lucroAcumulado.toFixed(2)}</td>
-          </tr>`;
-          tabela.innerHTML += linha;
         }
+
+        const linha = `<tr>
+          <td>${i + 1}</td>
+          <td>${atual.toFixed(2)}</td>
+          <td>${entrada}</td>
+          <td>${resultado}</td>
+          <td>R$ ${lucro.toFixed(2)}</td>
+          <td>R$ ${lucroAcumulado.toFixed(2)}</td>
+        </tr>`;
+        tabela.innerHTML += linha;
       }
     }
   </script>
