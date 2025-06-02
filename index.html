@@ -6,9 +6,9 @@
   <style>
     body { font-family: Arial, sans-serif; background: #111; color: #fff; padding: 20px; }
     h1 { color: #ffcc00; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #222; }
+    table { width: 100%; border-collapse: collapse; margin-top: 0; background: #222; }
     th, td { border: 1px solid #333; padding: 10px; text-align: center; }
-    th { background: #333; }
+    th { background: #333; position: sticky; top: 90px; z-index: 98; }
     tr:nth-child(even) { background: #1c1c1c; }
     input { padding: 10px; width: 100px; font-size: 16px; }
     button { padding: 10px; font-size: 16px; }
@@ -26,7 +26,7 @@
   <p id="lucro-geral">Lucro/Perda: R$ 0.00</p>
 
   <div id="entrada-container">
-    <input type="text" id="entrada" placeholder="Ex: 1.23" />
+    <input type="text" id="entrada" placeholder="Ex: 1.23" onkeypress="if(event.key === 'Enter'){registrar()}" autofocus />
     <button onclick="registrar()">Registrar</button>
   </div>
 
@@ -57,6 +57,7 @@
         valores.push(valor);
         atualizarTabela();
         input.value = "";
+        input.focus();
       }
     }
 
@@ -80,7 +81,7 @@
 
           if (r4 < 2 && r3 < 2 && r2 > 2 && r1 > r2) {
             entrada = "✅";
-            resultado = "⏳"; // Aguardando próxima rodada
+            resultado = "⏳";
           }
         }
 
