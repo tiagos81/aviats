@@ -75,6 +75,7 @@
       const lucroGeral = document.getElementById("lucro-geral");
       tabela.innerHTML = "";
       lucroAcumulado = 0;
+      const linhas = [];
 
       for (let i = 0; i < valores.length; i++) {
         let atual = valores[i];
@@ -116,9 +117,11 @@
           <td>R$ ${lucro.toFixed(2)}</td>
           <td>R$ ${lucroAcumulado.toFixed(2)}</td>
         </tr>`;
-        tabela.innerHTML += linha;
+
+        linhas.unshift(linha); // Adiciona no início para inverter a ordem
       }
 
+      tabela.innerHTML = linhas.join("");
       lucroGeral.innerHTML = `Lucro/Perda: R$ ${lucroAcumulado.toFixed(2)}`;
       lucroGeral.className = lucroAcumulado >= 0 ? "lucro-positivo" : "lucro-negativo";
     }
