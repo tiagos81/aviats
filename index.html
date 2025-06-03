@@ -11,7 +11,7 @@
     thead th { background: #333; position: sticky; top: 200px; z-index: 100; }
     tr:nth-child(even) { background: #1c1c1c; }
     input { padding: 10px; width: 100px; font-size: 16px; }
-    button { padding: 10px; font-size: 16px; }
+    button { padding: 10px; font-size: 16px; margin-left: 5px; }
     #entrada-container { padding: 10px 20px; background: #111; }
     #header-container {
       position: sticky;
@@ -36,6 +36,7 @@
     <div id="entrada-container">
       <input type="text" id="entrada" placeholder="Ex: 1.23" onkeypress="if(event.key === 'Enter'){registrar()}" autofocus />
       <button onclick="registrar()">Registrar</button>
+      <button onclick="exportarExcel()">Exportar para Excel</button>
     </div>
   </div>
 
@@ -118,12 +119,49 @@
           <td>R$ ${lucroAcumulado.toFixed(2)}</td>
         </tr>`;
 
-        linhas.unshift(linha); // Adiciona no início para inverter a ordem
+        linhas.unshift(linha);
       }
 
       tabela.innerHTML = linhas.join("");
       lucroGeral.innerHTML = `Lucro/Perda: R$ ${lucroAcumulado.toFixed(2)}`;
       lucroGeral.className = lucroAcumulado >= 0 ? "lucro-positivo" : "lucro-negativo";
+    }
+
+    function exportarExcel() {
+      let csv = "Rodada,Valor,Entrada,Resultado,Lucro (R$),Lucro Acumulado (R$)\n";
+      let lucroAcumulado = 0;
+      for (let i = 0; i < valores.length; i++) {
+        let atual = valores[i];
+        let entrada = "-";
+        let resultado = "-";
+        let lucro = 0;
+
+        if (i >= 4) {
+          let r4 = valores[i - 4];
+          let r3 = valores[i - 3];
+          let r2 = valores[i - 2];
+          let r1 = valores[i - 1];
+
+          if (r4 < 2 && r3 < 2 && r2 > 2 && r1 > r2) {
+            entrada = "✅";
+            resultado = atual >= saidaFixa ? "✅" : "❌";
+            lucro = resultado === "✅" ? stack * (saidaFixa - 1) : -stack;
+            lucroAcumulado += lucro;
+          }
+        }
+
+        csv += `${i + 1},${atual.toFixed(2)},${entrada},${resultado},${lucro.toFixed(2)},${lucroAcumulado.toFixed(2)}\n`;
+      }
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "estrategia_aviats_resultados.csv");
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   </script>
 </body>
