@@ -29,7 +29,7 @@
 <body>
   <div id="header-container">
     <h1>📈 Estratégia Aviats - TS</h1>
-    <p><strong>Condição de entrada:</strong> R[n−4] &lt; 2, R[n−3] &lt; 2, R[n−2] &gt; 2, R[n−1] &gt; R[n−2]</p>
+    <p><strong>Condição de entrada:</strong> R[n−3] &lt; 2, R[n−2] &lt; 2, R[n−1] &gt; 2, R[n] &gt; R[n−1]</p>
     <p><strong>Saída fixa:</strong> 1.12</p>
     <p><strong>Stake fixa:</strong> R$100</p>
     <p id="lucro-geral">Lucro/Perda: R$ 0.00</p>
@@ -55,8 +55,10 @@
   </table>
 
   <script>
+    // Armazena os valores inseridos
     const valores = [];
-    const stack = 100;
+    // Stake fixa para cada entrada
+    const stake = 100;
     const saidaFixa = 1.12;
     let lucroAcumulado = 0;
 
@@ -84,6 +86,7 @@
         let resultado = "-";
         let lucro = 0;
 
+        // Se os quatro últimos valores configuram a condição, registramos entrada
         if (i >= 3) {
           let r4 = valores[i - 3];
           let r3 = valores[i - 2];
@@ -92,21 +95,15 @@
 
           if (r4 < 2 && r3 < 2 && r2 > 2 && r1 > r2) {
             entrada = "✅";
-            resultado = "⏳";
-          }
-        }
-
-        if (i >= 4) {
-          let r4 = valores[i - 4];
-          let r3 = valores[i - 3];
-          let r2 = valores[i - 2];
-          let r1 = valores[i - 1];
-
-          if (r4 < 2 && r3 < 2 && r2 > 2 && r1 > r2) {
-            entrada = "✅";
-            resultado = atual >= saidaFixa ? "✅" : "❌";
-            lucro = resultado === "✅" ? stack * (saidaFixa - 1) : -stack;
-            lucroAcumulado += lucro;
+            // Resultado depende do próximo valor
+            if (i + 1 < valores.length) {
+              const proximo = valores[i + 1];
+              resultado = proximo >= saidaFixa ? "✅" : "❌";
+              lucro = resultado === "✅" ? stake * (saidaFixa - 1) : -stake;
+              lucroAcumulado += lucro;
+            } else {
+              resultado = "⏳";
+            }
           }
         }
 
@@ -118,17 +115,16 @@
           <td>R$ ${lucro.toFixed(2)}</td>
           <td>R$ ${lucroAcumulado.toFixed(2)}</td>
         </tr>`;
-
         linhas.unshift(linha);
       }
 
       tabela.innerHTML = linhas.join("");
-      lucroGeral.innerHTML = `Lucro/Perda: R$ ${lucroAcumulado.toFixed(2)}`;
+      lucroGeral.innerHTML = \`Lucro/Perda: R$ ${lucroAcumulado.toFixed(2)}\`;
       lucroGeral.className = lucroAcumulado >= 0 ? "lucro-positivo" : "lucro-negativo";
     }
 
     function exportarExcel() {
-      let csv = "Rodada,Valor,Entrada,Resultado,Lucro (R$),Lucro Acumulado (R$)\n";
+      let csv = "Rodada,Valor,Entrada,Resultado,Lucro (R$),Lucro Acumulado (R$)\\n";
       let lucroAcumulado = 0;
       for (let i = 0; i < valores.length; i++) {
         let atual = valores[i];
@@ -136,21 +132,26 @@
         let resultado = "-";
         let lucro = 0;
 
-        if (i >= 4) {
-          let r4 = valores[i - 4];
-          let r3 = valores[i - 3];
-          let r2 = valores[i - 2];
-          let r1 = valores[i - 1];
+        if (i >= 3) {
+          let r4 = valores[i - 3];
+          let r3 = valores[i - 2];
+          let r2 = valores[i - 1];
+          let r1 = valores[i];
 
           if (r4 < 2 && r3 < 2 && r2 > 2 && r1 > r2) {
             entrada = "✅";
-            resultado = atual >= saidaFixa ? "✅" : "❌";
-            lucro = resultado === "✅" ? stack * (saidaFixa - 1) : -stack;
-            lucroAcumulado += lucro;
+            if (i + 1 < valores.length) {
+              const proximo = valores[i + 1];
+              resultado = proximo >= saidaFixa ? "✅" : "❌";
+              lucro = resultado === "✅" ? stake * (saidaFixa - 1) : -stake;
+              lucroAcumulado += lucro;
+            } else {
+              resultado = "⏳";
+            }
           }
         }
 
-        csv += `${i + 1},${atual.toFixed(2)},${entrada},${resultado},${lucro.toFixed(2)},${lucroAcumulado.toFixed(2)}\n`;
+        csv += \`\${i + 1},\${atual.toFixed(2)},\${entrada},\${resultado},\${lucro.toFixed(2)},\${lucroAcumulado.toFixed(2)}\\n\`;
       }
 
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
